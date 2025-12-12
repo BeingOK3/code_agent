@@ -1,0 +1,18 @@
+# Core Dependencies
+python-dotenv>=1.0.0
+
+# LLM Clients
+openai>=1.3.0
+requests>=2.31.0
+
+# Utilities
+pydantic>=2.0.0
+
+# Development & Testing
+pytest>=7.4.0
+black>=23.0.0
+pylint>=2.17.0
+
+# Optional: Web Framework (for arXiv example)
+flask>=3.0.0
+requests-html>=0.10.0
