@@ -60,7 +60,11 @@ class InteractiveCodeAgent:
             context = self.conversation_manager.get_full_context()
             
             # Check user intent
-            if any(keyword in user_input.lower() for keyword in ['generate', 'create', 'build', 'make']):
+            # Keywords for code generation
+            generate_keywords = ['generate', 'create', 'build', 'make', 'write', 'implement', 
+                                '生成', '创建', '编写', '实现', '构建', '开发']
+            
+            if any(keyword in user_input.lower() for keyword in generate_keywords):
                 return self._handle_generation_request(user_input, context)
             
             elif any(keyword in user_input.lower() for keyword in ['modify', 'change', 'improve', 'fix', 'update']):
@@ -76,7 +80,17 @@ class InteractiveCodeAgent:
                 return self._show_help()
             
             else:
-                # Default: ask LLM for advice
+                # Default: ask LLM to help figure out intent, or assume generation if code-related
+                # If the input contains code-related terms, treat as generation request
+                code_related_terms = ['算法', '代码', 'code', 'algorithm', 'function', 'class', 'method', 
+                                     '函数', '类', '方法', 'api', 'library', '库', 'framework', '框架',
+                                     'app', '应用', '应用程序', '系统', 'system', 'tool', '工具']
+                
+                if any(term in user_input.lower() for term in code_related_terms):
+                    # Likely a code generation request
+                    return self._handle_generation_request(user_input, context)
+                
+                # Otherwise ask LLM for advice
                 return self._ask_llm_advice(user_input, context)
         
         except Exception as e:
