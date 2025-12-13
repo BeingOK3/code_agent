@@ -1,0 +1,176 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║               🚀 Code Agent - 启动和文件生成快速参考                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📍 项目位置
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+/Users/hushuai/Desktop/项目/code_agent
+
+🚀 启动项目（三选一）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[推荐] ⭐️ 一键启动（自动管理虚拟环境）
+    $ ./cli.sh
+
+[备选 1] 直接启动
+    $ python3 interactive_cli.py
+
+[备选 2] 查看演示
+    $ python3 demo_interactive.py
+
+🔐 首次配置（仅需一次）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Step 1: 复制配置模板
+    $ cp .env.example .env
+
+Step 2: 编辑 .env，填入 API Key
+    LLM_API_KEY=sk-your-actual-key-here
+
+Step 3: 获取 API Key
+    DeepSeek:  https://platform.deepseek.com/api_keys
+    OpenAI:    https://platform.openai.com/api-keys
+
+Step 4: 启动项目
+    $ ./cli.sh
+
+💾 生成的代码保存位置
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⭐️ workspace/ 目录
+
+📂 完整路径：
+    /Users/hushuai/Desktop/项目/code_agent/workspace/
+
+📄 示例生成的文件：
+    workspace/app.py              ← Python 应用
+    workspace/models.py           ← 数据模型
+    workspace/requirements.txt     ← 依赖
+    workspace/static/             ← CSS、JS、图片
+    workspace/templates/          ← HTML 模板
+    workspace/src/                ← 源代码目录
+
+🔄 使用生成的代码
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Step 1: 进入 workspace 目录
+    $ cd workspace
+
+Step 2: 安装依赖
+    $ pip install -r requirements.txt
+
+Step 3: 运行应用
+    $ python app.py
+
+📂 项目结构速览
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+code_agent/
+├── cli.sh                    ← 启动脚本 ⭐️
+├── interactive_cli.py        ← 主程序
+├── config.py                 ← 配置管理
+├── .env                      ← 本地配置（不上传）
+├── .env.example              ← 配置模板
+├── requirements.txt          ← 依赖列表
+├── agents/                   ← AI Agent 模块
+│   ├── planner.py           ← 规划 Agent
+│   └── coder.py             ← 代码生成 Agent
+├── workspace/               ← ⭐️ 生成代码的位置
+│   ├── app.py
+│   ├── models.py
+│   └── ...
+└── 📄 文档
+    ├── README.md
+    ├── STARTUP_GUIDE.md     ← 详细启动指南
+    └── QUICKSTART.md
+
+⚙️ 关键配置文件
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+config.py:
+    • LLM_PROVIDER = "deepseek"
+    • LLM_MODEL = "deepseek-chat"
+    • WORKSPACE_DIR = "workspace/" ← 生成代码位置
+    • LLM_API_KEY = 从 .env 读取
+
+.env:
+    • LLM_API_KEY=sk-...        ← 填入你的 API Key
+    • 受 .gitignore 保护
+    • 不会被 Git 提交
+
+✅ 完整启动流程（第一次）
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+$ cd /Users/hushuai/Desktop/项目/code_agent
+$ cp .env.example .env
+$ nano .env  # 编辑，填入 API Key
+$ ./cli.sh   # 启动（自动创建虚拟环境、安装依赖）
+
+👤 You: 生成一个 Flask Web 应用
+
+🤖 Agent: [规划...] [生成...]
+   ✓ Saved file: workspace/app.py
+   ✓ Saved file: workspace/models.py
+   ...
+
+$ cd workspace
+$ python app.py  # 运行生成的应用
+
+💡 常用命令
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+启动项目
+    ./cli.sh
+
+查看生成的文件
+    ls workspace/
+    tree workspace/
+
+查看生成的代码
+    cat workspace/app.py
+
+清空已生成文件
+    rm -rf workspace/*
+
+查看对话历史
+    ls .conversation_history/
+
+重新安装依赖
+    pip install -r requirements.txt --force-reinstall
+
+查看虚拟环境
+    ls .venv/
+    which python  # 检查是否使用虚拟环境中的 python
+
+🔗 重要链接
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+GitHub: https://github.com/BeingOK3/code_agent
+README: /Users/hushuai/Desktop/项目/code_agent/README.md
+快速开始: /Users/hushuai/Desktop/项目/code_agent/QUICKSTART.md
+启动指南: /Users/hushuai/Desktop/项目/code_agent/STARTUP_GUIDE.md
+
+❓ 快速问答
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Q: 如何启动？
+A: ./cli.sh
+
+Q: 生成的代码在哪？
+A: workspace/ 目录
+
+Q: 如何配置 API Key？
+A: 编辑 .env 文件（从 .env.example 复制）
+
+Q: 能否修改代码生成位置？
+A: 编辑 config.py 中的 WORKSPACE_DIR
+
+Q: 虚拟环境坏了怎么办？
+A: 删除 .venv，重新运行 ./cli.sh
+
+Q: 如何快速运行生成的代码？
+A: cd workspace && python app.py
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✨ 现在你已经知道如何使用 Code Agent 了！开始生成代码吧！
