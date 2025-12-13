@@ -7,6 +7,7 @@ import os
 import logging
 from pathlib import Path
 from typing import Optional
+from datetime import datetime
 from config import Config
 
 
@@ -22,13 +23,67 @@ class FileTools:
     # Get workspace directory from config
     WORKSPACE_DIR = Config.WORKSPACE_DIR
     
+    # Current generation session ID (set when starting a new generation)
+    CURRENT_SESSION_ID = None
+    CURRENT_SESSION_DIR = None
+    
+    @staticmethod
+    def start_generation_session(session_name: str = None) -> str:
+        """
+        Create a new session directory for code generation.
+        Each generation gets its own timestamped folder.
+        
+        Args:
+            session_name (str): Optional custom name for the session
+            
+        Returns:
+            str: Path to the new session directory
+        """
+        # Generate session ID with timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        if session_name:
+            # Sanitize session name
+            session_name = session_name.replace(" ", "_").replace("/", "_")[:30]
+            session_id = f"{timestamp}_{session_name}"
+        else:
+            session_id = f"session_{timestamp}"
+        
+        # Create session directory
+        session_dir = FileTools.WORKSPACE_DIR / session_id
+        session_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Update class variables
+        FileTools.CURRENT_SESSION_ID = session_id
+        FileTools.CURRENT_SESSION_DIR = session_dir
+        
+        logger.info(f"✓ Started generation session: {session_id}")
+        print(f"\n📁 New generation session: {session_id}")
+        print(f"   Location: {session_dir}\n")
+        
+        return str(session_dir)
+    
+    @staticmethod
+    def get_current_session_dir() -> Path:
+        """
+        Get the current session directory.
+        If no session is active, create one.
+        
+        Returns:
+            Path: Current session directory
+        """
+        if FileTools.CURRENT_SESSION_DIR is None:
+            FileTools.start_generation_session()
+        
+        return FileTools.CURRENT_SESSION_DIR
+    
     @staticmethod
     def save_code(filename: str, code: str, encoding: str = "utf-8") -> str:
         """
-        Save generated code to a file in the workspace directory.
+        Save generated code to a file in the current session directory.
         
         Args:
-            filename (str): Relative path within workspace (e.g., 'app.py' or 'src/main.py')
+            filename (str): Relative path within session (e.g., 'app.py' or 'src/main.py')
             code (str): The code content to save
             encoding (str): File encoding. Default: 'utf-8'
             
@@ -47,8 +102,11 @@ class FileTools:
             if not isinstance(code, str):
                 raise ValueError("code must be a string")
             
-            # Construct full file path
-            file_path = FileTools.WORKSPACE_DIR / filename
+            # Get current session directory (create if needed)
+            session_dir = FileTools.get_current_session_dir()
+            
+            # Construct full file path within session
+            file_path = session_dir / filename
             
             # Ensure parent directories exist
             parent_dir = file_path.parent
@@ -80,6 +138,53 @@ class FileTools:
         
         except Exception as e:
             error_msg = f"❌ Unexpected Error: {type(e).__name__}: {str(e)}"
+            logger.error(error_msg)
+            raise
+    
+    @staticmethod
+    def save_code_to_workspace(filename: str, code: str, encoding: str = "utf-8") -> str:
+        """
+        Save generated code directly to workspace root (legacy behavior).
+        This is kept for backwards compatibility.
+        
+        Args:
+            filename (str): Relative path within workspace
+            code (str): The code content to save
+            encoding (str): File encoding. Default: 'utf-8'
+            
+        Returns:
+            str: Absolute path to the saved file
+        """
+        try:
+            # Validate inputs
+            if not filename or not isinstance(filename, str):
+                raise ValueError("filename must be a non-empty string")
+            
+            if not isinstance(code, str):
+                raise ValueError("code must be a string")
+            
+            # Construct full file path directly in workspace
+            file_path = FileTools.WORKSPACE_DIR / filename
+            
+            # Ensure parent directories exist
+            parent_dir = file_path.parent
+            parent_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Write code to file
+            with open(file_path, "w", encoding=encoding) as f:
+                f.write(code)
+            
+            # Calculate relative path for display
+            relative_path = file_path.relative_to(FileTools.WORKSPACE_DIR.parent)
+            
+            # Log success
+            logger.info(f"✓ Saved file: {relative_path}")
+            print(f"✓ Saved file: {relative_path}")
+            
+            return str(file_path)
+        
+        except Exception as e:
+            error_msg = f"❌ Error: {type(e).__name__}: {str(e)}"
             logger.error(error_msg)
             raise
     

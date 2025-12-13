@@ -93,10 +93,16 @@ class InteractiveCodeAgent:
             print(f"\n📝 Planning phase...")
             plan = self.planner.plan_project(user_input)
             
+            # Start a new generation session with project name
+            project_name = plan.get('project_name', 'project').replace(" ", "_")[:30]
+            from tools.file_tools import FileTools
+            session_dir = FileTools.start_generation_session(project_name)
+            
             response += f"📋 **Project Plan:**\n"
             response += f"- Name: {plan.get('project_name', 'Unknown')}\n"
             response += f"- Files to generate: {len(plan.get('files', []))}\n"
-            response += f"- Tech Stack: {', '.join(plan.get('tech_stack', []))}\n\n"
+            response += f"- Tech Stack: {', '.join(plan.get('tech_stack', []))}\n"
+            response += f"- Session: 📁 `{project_name}` folder in workspace\n\n"
             
             print(f"💻 Generating code...")
             generated_count = 0
@@ -118,7 +124,7 @@ class InteractiveCodeAgent:
                     print(f"⚠️  Failed to generate {filename}: {e}")
             
             response += f"✅ **Generated {generated_count} files successfully!**\n"
-            response += f"📁 Check the workspace folder for generated files.\n"
+            response += f"📁 Files saved to: `workspace/{project_name}/`\n"
             
             # Update context
             self.conversation_manager.update_project_context('project_name', plan.get('project_name'))
